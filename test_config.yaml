@@ -1,0 +1,111 @@
+# 测试配置文件
+
+# 测试环境配置
+test:
+  environment: "test"
+  log_level: "debug"
+  timeout: 30s
+  
+# 数据库配置（测试用）
+database:
+  test:
+    type: "inmemory"
+    # 或者使用测试数据库
+    # type: "supabase"
+    # url: "https://test-project.supabase.co"
+    # key: "test-key"
+
+# Redis配置（测试用）
+redis:
+  test:
+    host: "localhost"
+    port: 6379
+    db: 15  # 使用测试数据库
+    password: ""
+    
+# LLM配置（测试用）
+llm:
+  test:
+    default_provider: "mock"  # 使用模拟客户端
+    providers:
+      mock:
+        type: "mock"
+        enabled: true
+
+# 告警配置（测试用）
+alerts:
+  test:
+    enabled: false  # 测试时禁用告警
+    clients:
+      feishu:
+        enabled: false
+      email:
+        enabled: false
+      webhook:
+        enabled: false
+
+# OSS配置（测试用）
+oss:
+  test:
+    enabled: false  # 测试时禁用OSS
+    endpoint: ""
+    bucket_name: ""
+    access_key_id: ""
+    access_key_secret: ""
+
+# 图像识别配置（测试用）
+image_recognition:
+  test:
+    enabled: false  # 测试时禁用图像识别
+    providers:
+      openai:
+        enabled: false
+      baidu:
+        enabled: false
+
+# 测试套件配置
+test_suites:
+  unit:
+    enabled: true
+    timeout: 30s
+    parallel: true
+    max_workers: 4
+    
+  integration:
+    enabled: true
+    timeout: 60s
+    parallel: false
+    max_workers: 1
+    
+  performance:
+    enabled: true
+    timeout: 300s
+    iterations: 1000
+    
+  stress:
+    enabled: true
+    timeout: 600s
+    concurrent_users: 10
+    duration: 60s
+    
+  e2e:
+    enabled: true
+    timeout: 120s
+    parallel: false
+    max_workers: 1
+
+# 覆盖率配置
+coverage:
+  enabled: true
+  threshold: 80
+  output_dir: "./coverage"
+  format: "html"
+
+# 报告配置
+reports:
+  enabled: true
+  output_dir: "./test-reports"
+  formats:
+    - "json"
+    - "html"
+    - "junit"

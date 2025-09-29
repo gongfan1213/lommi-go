@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # 开发环境主应用服务
+  loomi-go-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: loomi-go-dev
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ENV=development
+      - LOG_LEVEL=debug
+      - DATABASE_TYPE=inmemory
+      - REDIS_ENABLED=false
+      - ALERT_ENABLED=false
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/app
+      - /app/vendor
+      - /app/node_modules
+    depends_on:
+      - redis-dev
+    networks:
+      - loomi-dev-network
+    restart: unless-stopped
+    command: air -c .air.toml
+
+  # 开发环境Redis
+  redis-dev:
+    image: redis:7-alpine
+    container_name: loomi-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - loomi-dev-network
+    restart: unless-stopped
+
+  # 开发环境数据库（可选）
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: loomi-postgres-dev
+    environment:
+      POSTGRES_DB: loomi_dev
+      POSTGRES_USER: loomi
+      POSTGRES_PASSWORD: loomi123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - loomi-dev-network
+    restart: unless-stopped
+
+  # 开发工具
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: loomi-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - loomi-dev-network
+
+  # 开发环境监控
+  prometheus-dev:
+    image: prom/prometheus:latest
+    container_name: loomi-prometheus-dev
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus-dev.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - loomi-dev-network
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+    driver: local
+
+networks:
+  loomi-dev-network:
+    driver: bridge

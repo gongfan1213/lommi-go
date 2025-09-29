@@ -1,0 +1,69 @@
+# 忽略文件 - Docker构建时排除
+
+# Git相关
+.git
+.gitignore
+.gitattributes
+
+# 文档文件
+*.md
+docs/
+README*
+
+# 测试文件
+*_test.go
+test/
+testing/
+coverage/
+test-reports/
+
+# 日志文件
+logs/
+*.log
+
+# 临时文件
+tmp/
+temp/
+.tmp/
+
+# 开发工具配置
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 环境文件
+.env*
+!.env.example
+
+# 依赖管理
+vendor/
+
+# 构建产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 编辑器文件
+*.sublime-project
+*.sublime-workspace
+
+# 其他
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

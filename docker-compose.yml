@@ -1,0 +1,146 @@
+version: '3.8'
+
+services:
+  # 主应用服务
+  loomi-go:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: loomi-go-app
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ENV=production
+      - LOG_LEVEL=info
+      - DATABASE_TYPE=supabase
+      - REDIS_ENABLED=true
+      - ALERT_ENABLED=true
+    env_file:
+      - .env.prod
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./config:/app/config:ro
+    depends_on:
+      - redis
+    networks:
+      - loomi-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis服务
+  redis:
+    image: redis:7-alpine
+    container_name: loomi-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - loomi-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # 监控服务
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: loomi-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - loomi-network
+    restart: unless-stopped
+
+  # Grafana仪表板
+  grafana:
+    image: grafana/grafana:latest
+    container_name: loomi-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - loomi-network
+    restart: unless-stopped
+
+  # 日志收集
+  loki:
+    image: grafana/loki:latest
+    container_name: loomi-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loomi-network
+    restart: unless-stopped
+
+  # 日志代理
+  promtail:
+    image: grafana/promtail:latest
+    container_name: loomi-promtail
+    volumes:
+      - ./logs:/var/log/app:ro
+      - ./monitoring/promtail.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - loomi-network
+    restart: unless-stopped
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: loomi-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - loomi-go
+    networks:
+      - loomi-network
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  loki_data:
+    driver: local
+
+networks:
+  loomi-network:
+    driver: bridge

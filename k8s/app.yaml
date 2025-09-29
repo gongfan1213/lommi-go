@@ -1,0 +1,217 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loomi-go
+  namespace: loomi
+  labels:
+    app: loomi-go
+    version: v1.0.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: loomi-go
+  template:
+    metadata:
+      labels:
+        app: loomi-go
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: loomi-go
+        image: loomi-go:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: metrics
+        env:
+        - name: ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: DATABASE_TYPE
+          value: "supabase"
+        - name: REDIS_ENABLED
+          value: "true"
+        - name: ALERT_ENABLED
+          value: "true"
+        envFrom:
+        - secretRef:
+            name: loomi-secrets
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        - name: logs-volume
+          mountPath: /app/logs
+        - name: uploads-volume
+          mountPath: /app/uploads
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+      volumes:
+      - name: config-volume
+        configMap:
+          name: loomi-config
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: logs-pvc
+      - name: uploads-volume
+        persistentVolumeClaim:
+          claimName: uploads-pvc
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - loomi-go
+              topologyKey: kubernetes.io/hostname
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loomi-go
+  namespace: loomi
+  labels:
+    app: loomi-go
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8081"
+    prometheus.io/path: "/metrics"
+spec:
+  selector:
+    app: loomi-go
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: metrics
+    port: 8081
+    targetPort: 8081
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logs-pvc
+  namespace: loomi
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-client
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads-pvc
+  namespace: loomi
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: nfs-client
+
+---
+# 开发环境应用
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loomi-go-dev
+  namespace: loomi-dev
+  labels:
+    app: loomi-go-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loomi-go-dev
+  template:
+    metadata:
+      labels:
+        app: loomi-go-dev
+    spec:
+      containers:
+      - name: loomi-go
+        image: loomi-go:dev
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: metrics
+        env:
+        - name: ENV
+          value: "development"
+        - name: LOG_LEVEL
+          value: "debug"
+        - name: DATABASE_TYPE
+          value: "inmemory"
+        - name: REDIS_ENABLED
+          value: "false"
+        - name: ALERT_ENABLED
+          value: "false"
+        envFrom:
+        - secretRef:
+            name: loomi-dev-secrets
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+      volumes:
+      - name: config-volume
+        configMap:
+          name: loomi-dev-config

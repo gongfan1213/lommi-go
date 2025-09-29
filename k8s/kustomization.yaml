@@ -1,0 +1,44 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: loomi
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - redis.yaml
+  - app.yaml
+  - ingress.yaml
+  - monitoring.yaml
+  - hpa.yaml
+
+commonLabels:
+  app: loomi-go
+  version: v1.0.0
+  environment: production
+
+patches:
+  - target:
+      kind: Deployment
+      name: loomi-go
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+
+images:
+  - name: loomi-go
+    newTag: v1.0.0
+
+configMapGenerator:
+  - name: app-config
+    files:
+      - app_config.yaml=config/app_config.yaml
+      - llm_config.yaml=config/llm_config.yaml
+
+secretGenerator:
+  - name: app-secrets
+    files:
+      - jwt-secret=secrets/jwt-secret.txt
+      - master-key=secrets/master-key.txt

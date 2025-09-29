@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loomi-config
+  namespace: loomi
+data:
+  app_config.yaml: |
+    app:
+      name: "loomi-go"
+      version: "1.0.0"
+      environment: "production"
+      debug: false
+    
+    api:
+      host: "0.0.0.0"
+      port: 8080
+      read_timeout: 30
+      write_timeout: 30
+    
+    security:
+      jwt_secret: "your-jwt-secret-key"
+      cors_origins: ["*"]
+      rate_limit_enabled: true
+      rate_limit_requests: 100
+      rate_limit_window: 60
+    
+    database:
+      type: "supabase"
+      max_connections: 100
+      connection_timeout: 30
+    
+    redis:
+      enabled: true
+      max_connections: 50
+      connection_timeout: 10
+    
+    llm:
+      default_provider: "openai"
+      timeout: 120
+      max_retries: 3
+    
+    monitoring:
+      enabled: true
+      metrics_port: 8081
+      health_check_interval: 30
+
+  llm_config.yaml: |
+    providers:
+      openai:
+        enabled: true
+        api_key_env: "OPENAI_API_KEY"
+        base_url: "https://api.openai.com/v1"
+        model: "gpt-4"
+        temperature: 0.7
+        max_tokens: 2048
+      
+      claude:
+        enabled: true
+        api_key_env: "CLAUDE_API_KEY"
+        base_url: "https://api.anthropic.com/v1"
+        model: "claude-3-sonnet-20240229"
+        temperature: 0.7
+        max_tokens: 2048
+      
+      gemini:
+        enabled: true
+        api_key_env: "GEMINI_API_KEY"
+        base_url: "https://generativelanguage.googleapis.com/v1beta"
+        model: "gemini-pro"
+        temperature: 0.7
+        max_tokens: 2048
+
+  redis.conf: |
+    # Redis配置文件
+    port 6379
+    bind 0.0.0.0
+    protected-mode no
+    
+    # 持久化配置
+    save 900 1
+    save 300 10
+    save 60 10000
+    
+    # 内存配置
+    maxmemory 256mb
+    maxmemory-policy allkeys-lru
+    
+    # 日志配置
+    loglevel notice
+    logfile ""
+    
+    # 其他配置
+    timeout 0
+    tcp-keepalive 300
+    tcp-backlog 511
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loomi-dev-config
+  namespace: loomi-dev
+data:
+  app_config.yaml: |
+    app:
+      name: "loomi-go-dev"
+      version: "1.0.0"
+      environment: "development"
+      debug: true
+    
+    api:
+      host: "0.0.0.0"
+      port: 8080
+      read_timeout: 30
+      write_timeout: 30
+    
+    security:
+      jwt_secret: "dev-jwt-secret-key"
+      cors_origins: ["*"]
+      rate_limit_enabled: false
+    
+    database:
+      type: "inmemory"
+    
+    redis:
+      enabled: false
+    
+    llm:
+      default_provider: "mock"
+      timeout: 30
+      max_retries: 1
+    
+    monitoring:
+      enabled: true
+      metrics_port: 8081
+      health_check_interval: 10
