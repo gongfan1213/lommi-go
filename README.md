@@ -1,18 +1,18 @@
-# Loomi Go - 智能内容创作平台
+# 多智能体社媒内容生成系统
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](Dockerfile)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-blue.svg)](k8s/)
 
-Loomi Go是一个基于Go语言开发的企业级智能内容创作平台，提供完整的AI Agent系统、多模态处理、内容生成和智能分析功能。项目采用云原生架构，支持Docker容器化部署和Kubernetes编排。
+多智能体社媒内容生成系统是一个基于Go语言开发的企业级智能内容创作平台，提供完整的AI Agent系统、多模态处理、内容生成和智能分析功能。项目采用云原生架构，支持Docker容器化部署和Kubernetes编排。
 
 ## 🚀 核心特性
 
 ### 🤖 智能Agent系统
 - **多Agent协作架构** - 支持Supervisor + Researcher Agents模式
-- **Nova3智能编排** - 智能任务调度和决策引擎
-- **Loomi内容专家** - 专业内容创作和优化
+- **智能编排** - 智能任务调度和决策引擎
+- **内容专家** - 专业内容创作和优化
 - **实时状态管理** - 完整的Agent生命周期管理
 
 ### 🎯 内容创作功能
@@ -409,4 +409,4 @@ chore: 构建过程或辅助工具的变动
 
 ---
 
-**Loomi Go - 让AI内容创作更简单、更智能、更高效！** 🚀
+**多智能体社媒内容生成系统 - 让AI内容创作更简单、更智能、更高效！** 🚀
