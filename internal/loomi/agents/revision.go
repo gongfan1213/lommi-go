@@ -106,11 +106,5 @@ func (a *RevisionAgent) ProcessRequest(
 }
 
 func (a *RevisionAgent) getSystemPrompt() string {
-	return `你是一个句法结构与文字表达优化专家。你的任务是对输入文本提出针对性的修订建议，去除“AI味”，更符合语境与真实表达。
-
-使用如下 XML 输出：
-<revision1>
-<title>建议标题</title>
-<content>修订建议内容</content>
-</revision1>`
+	return `xxxx`
 }
