@@ -352,30 +352,7 @@ func (a *LoomiOrchestrator) createOrchestratorNotes(
 
 // getSystemPrompt returns the system prompt for orchestrator analysis
 func (a *LoomiOrchestrator) getSystemPrompt() string {
-	return `你是一个智能编排专家。请基于用户的需求和上下文，制定合理的执行计划并协调各个专业agent的工作。
-
-请按照以下格式输出分析结果：
-
-<orchestrator1>
-<title>编排计划标题</title>
-<content>
-详细的编排计划内容，包括：
-- 需求分析：理解用户的核心需求和目标
-- 执行策略：制定合理的执行顺序和并发策略
-- 资源分配：确定需要调用的专业agent类型
-- 预期结果：描述执行完成后的预期成果
-- 风险控制：识别潜在问题并提供应对方案
-</content>
-</orchestrator1>
-
-<orchestrator2>
-<title>另一个编排角度</title>
-<content>
-从不同角度制定另一个编排计划...
-</content>
-</orchestrator2>
-
-请提供1-2个不同的编排计划，每个计划都要有明确的标题和详细的内容。`
+	return `。`
 }
 
 // Helper methods for orchestrator functionality
