@@ -226,27 +226,7 @@ func (a *HitpointAgent) createHitpointNotes(
 
 // getSystemPrompt returns the system prompt for hitpoint analysis
 func (a *HitpointAgent) getSystemPrompt() string {
-	return `你的任务是思考【写作任务背景】怎么写效果最优，最终得出至多3条能爆的"内容策略"。
-对于[参考资料]，你只是合理参考，保持独立思考。
-
-# 什么是内容策略？
-**"内容策略"是对一篇内容从什么出发、往什么方向写、到底要说一个什么事儿、达到什么效果的核心指导。**
-**你需要先根据任务需求，确认内容策略的侧重，比如用户要写推广软文，就要重点提供说服力、种草力来真正推动消费决策和品牌认知；如果用户是要写一篇娱乐内容来起号，可能着重提供吸睛的叙事张力，吸引点击和停留，等等**
-
-要求：
-- 内容策略必须真实立体：要符合简中现状，考虑现实场景，不能显得假；
-- 不要试图“类比”、“包装”、“定义”，你的任务不是分析洞察，而是说清楚文案怎么写
-
-# 工作流程
-step1. 分析【写作任务背景】...
-step2. 检查[参考资料]...
-step3. 思考到底怎么写...
-
-**格式示例：**
-<hitpoint1>
-<title>小标题（不是帖子的标题，而是让人一眼看懂你的策略）</title>
-<content>内容</content>
-</hitpoint1>`
+	return ``
 }
 
 // processInstruction processes the instruction for display
