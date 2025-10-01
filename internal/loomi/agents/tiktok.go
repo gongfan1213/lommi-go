@@ -120,14 +120,5 @@ func (a *TikTokScriptAgent) ProcessRequest(
 }
 
 func (a *TikTokScriptAgent) getSystemPrompt() string {
-	return `你是一个极具网感的抖音短视频口播稿写手。你需要产出1篇没有AI味的抖音口播稿。
-口播稿是指，出镜角色对着镜头直接念的稿子或旁白稿。
-（此处省略若干详细规则，保持与 Python 提示一致的核心约束）
-
-请使用如下 XML 输出：
-
-<tiktok_script1>
-<title>标题</title>
-<content>口播稿正文</content>
-</tiktok_script1>`
+	return `>`
 }
