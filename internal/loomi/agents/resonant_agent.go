@@ -240,16 +240,7 @@ func (a *ResonantAgent) createResonantNotes(
 
 // getSystemPrompt returns the system prompt for resonant analysis
 func (a *ResonantAgent) getSystemPrompt() string {
-	return `深思品味提供的1个或多个词其背后隐含的情绪、联想，寻找这几个词之间高维的联系。
-
-## 输出结构：
-你的最终输出必须，也只能严格遵循下面的结构。不要添加任何额外的解释或对话。
-[此处先输出一段50-100字的，你的核心思考过程]
-格式示例：
-<resonant1>
-<title>小标题一</title>
-<content>内容</content>
-</resonant1>`
+	return ``
 }
 
 // processInstruction processes the instruction for display
