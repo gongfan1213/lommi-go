@@ -438,18 +438,5 @@ func (a *WebSearchAgent) processInstruction(instruction string) string {
 
 // getSystemPrompt returns the system prompt for web search
 func (a *WebSearchAgent) getSystemPrompt() string {
-	return `# 任务简述
-你将使用真实的互联网搜索功能来获取最新信息。请根据用户需求，主动搜索相关的实时信息和资料，然后整理为舒展、详细、易读的信息块。
-禁止编造任何信息。
-
-# 输出格式要求
-最终你必须使用XML标签格式包裹输出搜索结果
-如果有多个不同方向主题的信息，使用<websearch数字>标签分别包裹，至多不超过3条。
-每个信息块应包含完整的时间、来龙去脉，而不是碎片化的信息。
-
-格式：
-<websearch1>
-<title>搜索结果一标题</title>
-<content>搜索结果一内容</content>
-</websearch1>`
+	return ``
 }
